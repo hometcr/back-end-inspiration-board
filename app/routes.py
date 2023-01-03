@@ -7,6 +7,10 @@ from .models.card import Card
 boards_bp = Blueprint("boards", __name__, url_prefix="/boards")
 cards_bp = Blueprint("cards", __name__, url_prefix="/cards")
 
+
+##### testing testing 1 2 3 #####
+
+
 # Returns all boards
 @boards_bp.route("", methods=["GET"]) 
 def get_all_boards():
