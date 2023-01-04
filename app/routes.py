@@ -44,6 +44,22 @@ def delete_board(board_id):
 
     return {"details": f"Board {board_id} {board.title} successfully deleted"}, 200
 
+# Update the title or owner's name on a board 
+@boards_bp.route("/<board_id>", methods=["PUT"])
+def update_board(board_id):
+    board_query = Board.query
+    board = board_query.get(board_id)
+
+    request_body = request.get_json(force=True)
+    if "title" in request_body:
+        board.title = request_body["title"]
+    if "owners name" in request_body:
+        board.owners_name = request_body["owners name"]
+
+    db.session.commit()
+
+    return {"board": board.create_dict()}, 200
+
 # Returns all cards (or use query parameter to return cards with a given board_id [note])
 @cards_bp.route("", methods=["GET"])
 def get_all_cards():
@@ -84,3 +100,18 @@ def delete_card(card_id):
 
     return {"details": f"Card {card_id} successfully deleted"}, 200
 
+# Update the likes count or message on a card
+@cards_bp.route("/<card_id>", methods=["PUT"])
+def update_card(card_id):
+    card_query = Card.query
+    card = card_query.get(card_id)
+
+    request_body = request.get_json(force=True)
+    if "likes count" in request_body:
+        card.likes_count = request_body["likes count"]
+    if "message" in request_body:
+        card.message = request_body["message"]
+
+    db.session.commit()
+
+    return {"card": card.create_dict()}, 200
