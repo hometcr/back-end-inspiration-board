@@ -13,5 +13,5 @@ class Card(db.Model):
         card_dict["card_id"] = self.card_id
         card_dict["likes_count"] = self.likes_count
         card_dict["message"] = self.message
-        # card_dict["board_id"] = self.board_id
+        card_dict["board_id"] = self.board_id
         return card_dict
