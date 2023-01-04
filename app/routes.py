@@ -44,7 +44,7 @@ def delete_board(board_id):
 
     return {"details": f"Board {board_id} {board.title} successfully deleted"}, 200
 
-# Update the title or owner's name on a board 
+# Update the title or owner's name on a board -- Likely to remove
 @boards_bp.route("/<board_id>", methods=["PUT"])
 def update_board(board_id):
     board_query = Board.query
@@ -82,7 +82,7 @@ def get_one_card(card_id):
 @cards_bp.route("", methods=["POST"])
 def create_card():
     request_body = request.get_json(force=True) 
-    if not "likes count" in request_body or not "message" or not "board id" in request_body:
+    if not "likes count" or not "message" or not "board id" in request_body:
         return {"Error": "Please provide a likes count, message and board id"}, 400
     new_card = Card(likes_count=request_body["likes count"], message=request_body["message"], board_id=request_body["board id"] )
     db.session.add(new_card)
@@ -100,7 +100,7 @@ def delete_card(card_id):
 
     return {"details": f"Card {card_id} successfully deleted"}, 200
 
-# Update the likes count or message on a card
+# Update the likes count 
 @cards_bp.route("/<card_id>", methods=["PUT"])
 def update_card(card_id):
     card_query = Card.query
@@ -109,8 +109,6 @@ def update_card(card_id):
     request_body = request.get_json(force=True)
     if "likes count" in request_body:
         card.likes_count = request_body["likes count"]
-    if "message" in request_body:
-        card.message = request_body["message"]
 
     db.session.commit()
 
