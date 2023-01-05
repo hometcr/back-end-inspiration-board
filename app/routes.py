@@ -30,7 +30,6 @@ def get_one_board(board_id):
     board = validate_model(Board, board_id)
     return {"board": board.create_dict()}, 200
 
-
 @boards_bp.route("<board_id>/cards", methods=["GET"])
 def get_cards_from_board(board_id):
     board = validate_model(Board, board_id)
@@ -70,7 +69,6 @@ def add_card_to_board(board_id):
         "card_ids": request_body["card_ids"],
     }, 200
 
-
 @boards_bp.route("/<board_id>", methods=["DELETE"])
 def delete_board(board_id):
     board = validate_model(Board, board_id)
@@ -78,17 +76,17 @@ def delete_board(board_id):
     db.session.commit()
     return {"details": f"Board {board_id} {board.title} successfully deleted"}, 200
 
-# Update the title or owner's name on a board -- Likely to remove
-@boards_bp.route("/<board_id>", methods=["PUT"])
-def update_board(board_id):
-    board = validate_model(Board, board_id)
-    request_body = request.get_json(force=True)
-    if "title" in request_body:
-        board.title = request_body["title"]
-    if "owners name" in request_body:
-        board.owner = request_body["owners name"]
-    db.session.commit()
-    return {"board": board.create_dict()}, 200
+# Update the title or owner's name on a board
+# @boards_bp.route("/<board_id>", methods=["PUT"])
+# def update_board(board_id):
+#     board = validate_model(Board, board_id)
+#     request_body = request.get_json(force=True)
+#     if "title" in request_body:
+#         board.title = request_body["title"]
+#     if "owners name" in request_body:
+#         board.owners_name = request_body["owners name"]
+#     db.session.commit()
+#     return {"board": board.create_dict()}, 200
 
 # Returns all cards (or use query parameter to return cards with a given board_id [note syntax])
 @cards_bp.route("", methods=["GET"])
@@ -107,19 +105,19 @@ def get_one_card(card_id):
     card= validate_model(Card, card_id)
     return {"card": card.create_dict()}, 200
 
-# # Posts a card when there is a likes count, a message, and a board_id
-# @cards_bp.route("", methods=["POST"])
-# def create_card():
-#     try:
-#         request_body = request.get_json(force=True)
-#     except:
-#         return {"Error": "Please include a request body with a message and board id"}, 400
-#     if not "message" or not "board id" in request_body:
-#         return {"Error": "Please provide a message and board id"}, 400
-#     new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board id"] )
-#     db.session.add(new_card)
-#     db.session.commit()
-#     return {"card": new_card.create_dict()}, 201
+# Posts a card when there is a likes count, a message, and a board_id
+@cards_bp.route("", methods=["POST"])
+def create_card():
+    try:
+        request_body = request.get_json(force=True)
+    except:
+        return {"Error": "Please include a request body with a message and board id"}, 400
+    if not "message" or not "board id" in request_body:
+        return {"Error": "Please provide a message and board id"}, 400
+    new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board id"] )
+    db.session.add(new_card)
+    db.session.commit()
+    return {"card": new_card.create_dict()}, 201
 
 # Delete a card
 @cards_bp.route("/<card_id>", methods=["DELETE"])
