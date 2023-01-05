@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response, abort 
 from app import db
-
 from .models.board import Board 
 from .models.card import Card 
 
@@ -13,13 +12,10 @@ def validate_model(cls, model_id):
     except:
         abort(make_response(
             {"Message": f"{cls.__name__} {model_id} invalid"}, 400))
-
     model = cls.query.get(model_id)
-
     if not model:
         abort(make_response(
             {"Message": f"{cls.__name__} {model_id} not found"}, 404))
-
     return model
 
 @boards_bp.route("", methods=["GET"]) 
@@ -34,6 +30,15 @@ def get_one_board(board_id):
     board = validate_model(Board, board_id)
     return {"board": board.create_dict()}, 200
 
+
+@boards_bp.route("<board_id>/cards", methods=["GET"])
+def get_cards_from_board(board_id):
+    board = validate_model(Board, board_id)
+
+    board_dict = board.create_dict()
+    board_dict["cards"] = [card.create_dict() for card in board.cards]
+    return board_dict, 200
+
 # Posts a board when there is a title and owner's name
 @boards_bp.route("", methods=["POST"])
 def create_board():
@@ -43,10 +48,28 @@ def create_board():
         return {"Error": "Please include a request body"}, 400
     if not "title" in request_body or not "owners name" in request_body:
         return {"Error": "Please provide both the board title and owner's name"}, 400
-    new_board = Board(title=request_body["title"], owners_name=request_body["owners name"] )
+    new_board = Board(title=request_body["title"], owner=request_body["owners name"] )
     db.session.add(new_board)
     db.session.commit()
     return {"board": new_board.create_dict()}, 201
+
+@boards_bp.route("<board_id>/cards", methods=["POST"])
+def add_card_to_board(board_id):
+    board = validate_model(Board, board_id)
+    request_body = request.get_json()
+
+    for id in request_body["card_ids"]:
+        card = validate_model(Card, id)
+        board.cards.append(card)
+        db.session.add(card)
+
+    db.session.commit()
+
+    return {
+        "id": int(board_id),
+        "card_ids": request_body["card_ids"],
+    }, 200
+
 
 @boards_bp.route("/<board_id>", methods=["DELETE"])
 def delete_board(board_id):
@@ -63,7 +86,7 @@ def update_board(board_id):
     if "title" in request_body:
         board.title = request_body["title"]
     if "owners name" in request_body:
-        board.owners_name = request_body["owners name"]
+        board.owner = request_body["owners name"]
     db.session.commit()
     return {"board": board.create_dict()}, 200
 
@@ -84,19 +107,19 @@ def get_one_card(card_id):
     card= validate_model(Card, card_id)
     return {"card": card.create_dict()}, 200
 
-# Posts a card when there is a likes count, a message, and a board_id
-@cards_bp.route("", methods=["POST"])
-def create_card():
-    try:
-        request_body = request.get_json(force=True)
-    except:
-        return {"Error": "Please include a request body"}, 400
-    if not "likes count" or not "message" or not "board id" in request_body:
-        return {"Error": "Please provide a likes count, message and board id"}, 400
-    new_card = Card(likes_count=request_body["likes count"], message=request_body["message"], board_id=request_body["board id"] )
-    db.session.add(new_card)
-    db.session.commit()
-    return {"card": new_card.create_dict()}, 201
+# # Posts a card when there is a likes count, a message, and a board_id
+# @cards_bp.route("", methods=["POST"])
+# def create_card():
+#     try:
+#         request_body = request.get_json(force=True)
+#     except:
+#         return {"Error": "Please include a request body with a message and board id"}, 400
+#     if not "message" or not "board id" in request_body:
+#         return {"Error": "Please provide a message and board id"}, 400
+#     new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board id"] )
+#     db.session.add(new_card)
+#     db.session.commit()
+#     return {"card": new_card.create_dict()}, 201
 
 # Delete a card
 @cards_bp.route("/<card_id>", methods=["DELETE"])
