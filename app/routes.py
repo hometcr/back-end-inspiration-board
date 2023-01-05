@@ -11,11 +11,11 @@ def validate_model(cls, model_id):
         model_id = int(model_id)
     except:
         abort(make_response(
-            {"Message": f"{cls.__name__} {model_id} invalid"}, 400))
+            {"message": f"{cls.__name__} {model_id} invalid"}, 400))
     model = cls.query.get(model_id)
     if not model:
         abort(make_response(
-            {"Message": f"{cls.__name__} {model_id} not found"}, 404))
+            {"message": f"{cls.__name__} {model_id} not found"}, 404))
     return model
 
 @boards_bp.route("", methods=["GET"]) 
@@ -43,13 +43,18 @@ def create_board():
     try:
         request_body = request.get_json(force=True)
     except:
-        return {"Error": "Please include a request body"}, 400
+        return {"error": "Please include a request body"}, 400
     if not "title" in request_body or not "owner" in request_body:
-        return {"Error": "Please provide both the title and owner"}, 400
+        return {"error": "Please provide both the title and owner"}, 400
     new_board = Board(title=request_body["title"], owner=request_body["owner"] )
     db.session.add(new_board)
     db.session.commit()
-    return {"board": new_board.create_dict()}, 201
+
+    
+    return {
+        "message": "Board My inspiration board successfully created",
+        "board": new_board.create_dict()
+        }, 201
 
 @boards_bp.route("<board_id>/cards", methods=["POST"])
 def add_card_to_board(board_id):
@@ -123,9 +128,9 @@ def update_card(card_id):
 #     try:
 #         request_body = request.get_json(force=True)
 #     except:
-#         return {"Error": "Please include a request body with a message and board id"}, 400
+#         return {"error": "Please include a request body with a message and board id"}, 400
 #     if not "message" or not "board id" in request_body:
-#         return {"Error": "Please provide a message and board id"}, 400
+#         return {"error": "Please provide a message and board id"}, 400
 #     new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board id"] )
 #     db.session.add(new_card)
 #     db.session.commit()

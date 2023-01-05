@@ -48,7 +48,16 @@ def test_create_board(client):
 
     # Assert
     assert response.status_code == 201
-    assert response_body == "Board My inspiration board successfully created"
+    assert response_body == {
+        "message": "Board My inspiration board successfully created",
+        "board": {
+            "title": "My inspiration board",
+            "owner": "Curious Georges",
+            "board_id": 1
+        }
+    }
+    
+    
 
 
 # we can slightly adjust our response message to say "owner"
@@ -61,7 +70,7 @@ def test_create_board_missing_title(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"Error": "Please provide both the board title and owner"}
+    assert response_body == {"error": "Please provide both the title and owner"}
 
 
 # we can slightly adjust our response message to say "owner"
@@ -74,7 +83,7 @@ def test_create_board_missing_owner(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"Error": "Please provide both the board title and owner"}
+    assert response_body == {"error": "Please provide both the title and owner"}
 
 
 # We can edit our post route to account for posts without a request body
@@ -86,7 +95,7 @@ def test_create_board_missing_body(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"Error": "Please provide both the board title and owner"}
+    assert response_body == {"error": "Please include a request body"}
 
 
 def test_get_all_cards_with_no_records(client):
