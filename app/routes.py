@@ -6,10 +6,6 @@ from .models.card import Card
 boards_bp = Blueprint("boards", __name__, url_prefix="/boards")
 cards_bp = Blueprint("cards", __name__, url_prefix="/cards")
 
-
-## just updated the migrations ##
-
-
 def validate_model(cls, model_id):
     try:
         model_id = int(model_id)
@@ -59,14 +55,11 @@ def create_board():
 def add_card_to_board(board_id):
     board = validate_model(Board, board_id)
     request_body = request.get_json()
-
     for id in request_body["card_ids"]:
         card = validate_model(Card, id)
         board.cards.append(card)
         db.session.add(card)
-
     db.session.commit()
-
     return {
         "id": int(board_id),
         "card_ids": request_body["card_ids"],
@@ -79,21 +72,18 @@ def delete_board(board_id):
     db.session.commit()
     return {"details": f"Board {board_id} {board.title} successfully deleted"}, 200
 
-# Update the title or owner's name on a board -- Likely to remove
-@boards_bp.route("/<board_id>", methods=["PUT"])
-def update_board(board_id):
-    board_query = Board.query
-    board = board_query.get(board_id)
-
-    request_body = request.get_json(force=True)
-    if "title" in request_body:
-        board.title = request_body["title"]
-    if "owners name" in request_body:
-        board.owners_name = request_body["owners name"]
-
-    db.session.commit()
-
-    return {"board": board.create_dict()}, 200
+# Update the title or owner on a board 
+# @boards_bp.route("/<board_id>", methods=["PUT"])
+# def update_board(board_id):
+#     board_query = Board.query
+#     board = board_query.get(board_id)
+#     request_body = request.get_json(force=True)
+#     if "title" in request_body:
+#         board.title = request_body["title"]
+#     if "owner" in request_body:
+#         board.owners_name = request_body["owner"]
+#     db.session.commit()
+#     return {"board": board.create_dict()}, 200
 
 @cards_bp.route("", methods=["GET"])
 def get_all_cards():
