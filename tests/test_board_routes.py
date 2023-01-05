@@ -20,8 +20,7 @@ def test_get_one_board(client, one_board):
     assert response_body == {
         "board": {
             "title": "This is an inspiration board",
-            # can we rename 'owners_name' to just 'owner'?
-            "owners_name": "Curious Georges",
+            "owner": "Curious Georges",
             "board_id": 1
         }
     }
@@ -43,7 +42,7 @@ def test_create_board(client):
     # Act
     response = client.post("/boards", json={
         "title": "My inspiration board",
-        "owners name": "Curious Georges"
+        "owner": "Curious Georges"
     })
     response_body = response.get_json()
 
@@ -52,18 +51,20 @@ def test_create_board(client):
     assert response_body == "Board My inspiration board successfully created"
 
 
+# we can slightly adjust our response message to say "owner"
 def test_create_board_missing_title(client):
     # Act
     response = client.post("/boards", json={
-        "owners name": "Curious Georges"
+        "owner": "Curious Georges"
     })
     response_body = response.get_json()
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"Error": "Please provide both the board title and owner's name"}
+    assert response_body == {"Error": "Please provide both the board title and owner"}
 
 
+# we can slightly adjust our response message to say "owner"
 def test_create_board_missing_owner(client):
     # Act
     response = client.post("/boards", json={
@@ -73,10 +74,11 @@ def test_create_board_missing_owner(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"Error": "Please provide both the board title and owner's name"}
+    assert response_body == {"Error": "Please provide both the board title and owner"}
 
 
 # We can edit our post route to account for posts without a request body
+# and we can slightly adjust our response message to say "owner"
 def test_create_board_missing_body(client):
     # Act
     response = client.post("/boards")
@@ -84,7 +86,7 @@ def test_create_board_missing_body(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"Error": "Please provide both the board title and owner's name"}
+    assert response_body == {"Error": "Please provide both the board title and owner"}
 
 
 def test_get_all_cards_with_no_records(client):
@@ -95,6 +97,3 @@ def test_get_all_cards_with_no_records(client):
     # Assert
     assert response.status_code == 200
     assert response_body == []
-
-
-# create tests to figure out the relationship between board and card- will try to imitate task list

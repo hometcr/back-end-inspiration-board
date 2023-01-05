@@ -37,6 +37,6 @@ def client(app):
 @pytest.fixture
 def one_board(app):
     example_board = Board(
-        title="This is an inspiration board", owners_name="Curious Georges")
+        title="This is an inspiration board", owner="Curious Georges")
     db.session.add(example_board)
     db.session.commit()
