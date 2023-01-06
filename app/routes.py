@@ -52,7 +52,7 @@ def create_board():
 
     
     return {
-        "message": "Board My inspiration board successfully created",
+        "message": f"Board {new_board.title} successfully created",
         "board": new_board.create_dict()
         }, 201
 
