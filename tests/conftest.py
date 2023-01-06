@@ -37,6 +37,22 @@ def client(app):
 @pytest.fixture
 def one_board(app):
     example_board = Board(
-        title="This is an inspiration board", owner="Curious Georges")
+        title="This is an inspiration board", 
+        owner="Curious Georges"
+    )
     db.session.add(example_board)
     db.session.commit()
+
+
+
+
+
+# @pytest.fixture
+# def two_boards(app, one_board):
+#     first_board = Board.query.first()
+#     second_board = Board(
+#         title="Inspirational quotes", 
+#         owner="Curious Georges"
+#     )
+#     db.session.add_all([first_board, second_board])
+#     db.session.commit()
