@@ -123,15 +123,15 @@ def update_card(card_id):
     return {"card": card.create_dict()}, 200
 
 # Posts a card when there is a likes_count, a message, and a board_id
-# @cards_bp.route("", methods=["POST"])
-# def create_card():
-#     try:
-#         request_body = request.get_json(force=True)
-#     except:
-#         return {"error": "Please include a request body with a message and board id"}, 400
-#     if not "message" or not "board id" in request_body:
-#         return {"error": "Please provide a message and board id"}, 400
-#     new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board id"] )
-#     db.session.add(new_card)
-#     db.session.commit()
-#     return {"card": new_card.create_dict()}, 201
+@cards_bp.route("", methods=["POST"])
+def create_card():
+    try:
+        request_body = request.get_json(force=True)
+    except:
+        return {"error": "Please include a request body with a message and board id"}, 400
+    if not "message" or not "board id" in request_body:
+        return {"error": "Please provide a message and board id"}, 400
+    new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board_id"] )
+    db.session.add(new_card)
+    db.session.commit()
+    return {"card": new_card.create_dict()}, 201
