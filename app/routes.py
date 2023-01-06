@@ -146,7 +146,7 @@ def create_card():
         request_body = request.get_json(force=True)
     except:
         return {"error": "Please include a request body with a message and board id"}, 400
-    if not "message" or not "board_id" in request_body:
+    if not "message" in request_body or not "board_id" in request_body:
         return {"error": "Please provide a message and board id"}, 400
     new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board_id"] )
     db.session.add(new_card)
