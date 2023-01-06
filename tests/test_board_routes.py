@@ -43,7 +43,6 @@ def test_get_one_board(client, one_board):
     }
 
 
-# to pass, change 'message' to 'error'
 def test_get_nonexistent_board(client):
     # Act
     response = client.get("/boards/1")
@@ -54,7 +53,6 @@ def test_get_nonexistent_board(client):
     assert response_body == {"error": "Board 1 not found"}, 404
 
 
-# to pass, we can add quotes to message
 def test_create_board(client):
     # Act
     response = client.post("/boards", json={
@@ -80,7 +78,6 @@ def test_create_board(client):
     assert new_board.board_id == 1
 
 
-# to pass, we can change add 'with a title and owner' for continuity
 def test_create_board_missing_body(client):
     # Act
     response = client.post("/boards")
@@ -115,7 +112,6 @@ def test_create_board_missing_owner(client):
     assert response_body == {"error": "Please provide both the title and owner"}
 
 
-# to pass, we can rephrase the delete response
 def test_delete_board(client, one_board):
     # Act
     response = client.delete("/boards/1")
@@ -129,7 +125,6 @@ def test_delete_board(client, one_board):
     assert not old_board
 
 
-# to pass, change 'message' to 'error'
 def test_delete_nonexistent_board(client):
     # Act
     response = client.delete("/boards/1")

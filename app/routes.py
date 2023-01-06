@@ -11,11 +11,11 @@ def validate_model(cls, model_id):
         model_id = int(model_id)
     except:
         abort(make_response(
-            {"message": f"{cls.__name__} {model_id} invalid"}, 400))
+            {"error": f"{cls.__name__} {model_id} invalid"}, 400))
     model = cls.query.get(model_id)
     if not model:
         abort(make_response(
-            {"message": f"{cls.__name__} {model_id} not found"}, 404))
+            {"error": f"{cls.__name__} {model_id} not found"}, 404))
     return model
 
 # documented
@@ -47,7 +47,7 @@ def create_board():
     try:
         request_body = request.get_json(force=True)
     except:
-        return {"error": "Please include a request body"}, 400
+        return {"error": "Please include a request body with a title and owner"}, 400
     if not "title" in request_body or not "owner" in request_body:
         return {"error": "Please provide both the title and owner"}, 400
     new_board = Board(title=request_body["title"], owner=request_body["owner"] )
@@ -56,7 +56,7 @@ def create_board():
 
     
     return {
-        "message": f"Board {new_board.title} successfully created",
+        "message": f"Board '{new_board.title}' successfully created",
         "board": new_board.create_dict()
         }, 201
 
@@ -84,7 +84,7 @@ def delete_board(board_id):
         db.session.delete(card)
     db.session.delete(board)
     db.session.commit()
-    return {"details": f"Board {board_id} {board.title} successfully deleted"}, 200
+    return {"message": f"Board '{board.title}' successfully deleted"}, 200
 
 # Update the title or owner on a board 
 # @boards_bp.route("/<board_id>", methods=["PUT"])
@@ -127,7 +127,7 @@ def delete_card(card_id):
     card= validate_model(Card, card_id)
     db.session.delete(card)
     db.session.commit()
-    return {"details": f"Card {card_id} successfully deleted"}, 200
+    return {"details": f"Card '{card_id}' successfully deleted"}, 200
 
 # Update the likes_count 
 @cards_bp.route("/<card_id>", methods=["PUT"])
@@ -151,4 +151,7 @@ def create_card():
     new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board_id"] )
     db.session.add(new_card)
     db.session.commit()
-    return {"card": new_card.create_dict()}, 201
+    return {
+        "message": f"Card '{new_card.message}' successfully created",
+        "Card": new_card.create_dict()
+        }, 201

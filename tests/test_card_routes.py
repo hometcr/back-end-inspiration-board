@@ -50,7 +50,6 @@ def test_get_one_card(client, one_card_belongs_to_one_board):
     }
 
 
-# to pass, change 'message' to 'error'
 def test_get_one_nonexistant_card(client):
     # Act
     response = client.get("/cards/1")
@@ -61,7 +60,6 @@ def test_get_one_nonexistant_card(client):
     assert response_body == {"error": "Card 1 not found"}, 404
 
 
-# to pass, add message to response
 def test_create_card(client, one_board):
     # Act
     response = client.post("/cards", json={
@@ -73,8 +71,8 @@ def test_create_card(client, one_board):
     # Assert
     assert response.status_code == 201
     assert response_body == {
-        "message": "Card I feel inspired successfully created", 
-        "card": {
+        "message": "Card 'I feel inspired' successfully created", 
+        "Card": {
             "message": "I feel inspired",
             "board_id": 1,
             "card_id": 1,
