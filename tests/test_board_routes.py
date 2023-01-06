@@ -80,7 +80,7 @@ def test_create_board(client):
     assert new_board.board_id == 1
 
 
-# to pass, we can change 'error' to 'message'
+# to pass, we can change 'error' to 'message' and add 'with a title and owner' for continuity
 def test_create_board_missing_body(client):
     # Act
     response = client.post("/boards")
@@ -88,7 +88,7 @@ def test_create_board_missing_body(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"message": "Please include a request body"}
+    assert response_body == {"message": "Please include a request body with a title and owner"}
 
 
 # to pass, we can change 'error' to 'message'
