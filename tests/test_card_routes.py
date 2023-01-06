@@ -50,6 +50,7 @@ def test_get_one_card(client, one_card_belongs_to_one_board):
     }
 
 
+# to pass, change 'message' to 'error'
 def test_get_one_nonexistant_card(client):
     # Act
     response = client.get("/cards/1")
@@ -57,7 +58,7 @@ def test_get_one_nonexistant_card(client):
 
     # Assert
     assert response.status_code == 404
-    assert response_body == {"message": "Card 1 not found"}, 404
+    assert response_body == {"error": "Card 1 not found"}, 404
 
 
 # to pass, add message to response
@@ -92,7 +93,6 @@ def test_create_card(client, one_board):
     assert this_board.cards == [new_card]
 
 
-# to pass, change 'error' to 'message'
 def test_create_card_missing_body(client, one_board):
     # Act
     response = client.post("/cards")
@@ -100,7 +100,7 @@ def test_create_card_missing_body(client, one_board):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"message": "Please include a request body with a message and board id"}
+    assert response_body == {"error": "Please include a request body with a message and board id"}
 
 
 def test_create_card_missing_board_id(client, one_board):
