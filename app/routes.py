@@ -60,6 +60,7 @@ def create_board():
         "board": new_board.create_dict()
         }, 201
 
+# documented
 @boards_bp.route("<board_id>/cards", methods=["POST"])
 def add_card_to_board(board_id):
     board = validate_model(Board, board_id)
@@ -75,6 +76,7 @@ def add_card_to_board(board_id):
         "id": int(board_id),
         "card_ids": request_body["card_ids"],
     }, 200
+
 
 @boards_bp.route("/<board_id>", methods=["DELETE"]) 
 def delete_board(board_id):
@@ -130,15 +132,19 @@ def delete_card(card_id):
     return {"details": f"Card '{card_id}' successfully deleted"}, 200
 
 # Update the likes_count 
-@cards_bp.route("/<card_id>", methods=["PUT"])
+@cards_bp.route("/<card_id>", methods=["PATCH"])
 def update_card(card_id):
     card= validate_model(Card, card_id)
     request_body = request.get_json(force=True)
     if "likes_count" in request_body:
         card.likes_count = request_body["likes_count"]
     db.session.commit()
-    return {"card": card.create_dict()}, 200
+    return {
+        "message": "likes count successfully updated",
+        "card": card.create_dict()
+        }, 200
 
+# documented
 # Posts a card when there is a likes_count, a message, and a board_id
 @cards_bp.route("", methods=["POST"])
 def create_card():
