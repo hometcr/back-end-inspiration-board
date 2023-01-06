@@ -1,3 +1,4 @@
+from app.models.board import Board
 
 
 def test_get_all_board_with_no_records(client):
@@ -71,6 +72,11 @@ def test_create_board(client):
             "board_id": 1
         }
     }
+    new_board = Board.query.get(1)
+    assert new_board
+    assert new_board.title == "My inspiration board"
+    assert new_board.owner == "Curious Georges"
+    assert new_board.board_id == 1
 
 
 def test_create_board_missing_body(client):
@@ -105,3 +111,27 @@ def test_create_board_missing_owner(client):
     # Assert
     assert response.status_code == 400
     assert response_body == {"error": "Please provide both the title and owner"}
+
+
+# to pass, we can rephrase the delete response
+def test_delete_board(client, one_board):
+    # Act
+    response = client.delete("/boards/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 200
+    assert response_body == {"message": "Board This is an inspiration board successfully deleted"}
+    
+    old_board = Board.query.get(1)
+    assert not old_board
+
+
+def test_delete_nonexistent_board(client):
+    # Act
+    response = client.delete("/boards/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 404
+    assert response_body == {"message": "Board 1 not found"}
