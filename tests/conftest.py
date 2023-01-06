@@ -43,7 +43,16 @@ def one_board(app):
     db.session.add(example_board)
     db.session.commit()
 
-
+@pytest.fixture
+def one_card_belongs_to_one_board(app, one_board):
+    example_board = Board.query.first()
+    example_card = Card(
+        message="This is an inspirational card",
+        board_id=1,
+        likes_count=0
+    )
+    db.session.add_all([example_board, example_card])
+    db.session.commit()
 
 
 

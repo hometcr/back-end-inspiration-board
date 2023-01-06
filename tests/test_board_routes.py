@@ -54,6 +54,7 @@ def test_get_nonexistent_board(client):
     assert response_body == {"message": "Board 1 not found"}, 404
 
 
+# to pass, we can add quotes to message
 def test_create_board(client):
     # Act
     response = client.post("/boards", json={
@@ -65,7 +66,7 @@ def test_create_board(client):
     # Assert
     assert response.status_code == 201
     assert response_body == {
-        "message": "Board My inspiration board successfully created",
+        "message": "Board 'My inspiration board' successfully created",
         "board": {
             "title": "My inspiration board",
             "owner": "Curious Georges",
@@ -79,6 +80,7 @@ def test_create_board(client):
     assert new_board.board_id == 1
 
 
+# to pass, we can change 'error' to 'message'
 def test_create_board_missing_body(client):
     # Act
     response = client.post("/boards")
@@ -86,9 +88,10 @@ def test_create_board_missing_body(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please include a request body"}
+    assert response_body == {"message": "Please include a request body"}
 
 
+# to pass, we can change 'error' to 'message'
 def test_create_board_missing_title(client):
     # Act
     response = client.post("/boards", json={
@@ -98,9 +101,10 @@ def test_create_board_missing_title(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please provide both the title and owner"}
+    assert response_body == {"message": "Please provide both the title and owner"}
 
 
+# to pass, we can change 'error' to 'message'
 def test_create_board_missing_owner(client):
     # Act
     response = client.post("/boards", json={
@@ -110,7 +114,7 @@ def test_create_board_missing_owner(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please provide both the title and owner"}
+    assert response_body == {"message": "Please provide both the title and owner"}
 
 
 # to pass, we can rephrase the delete response
@@ -121,7 +125,7 @@ def test_delete_board(client, one_board):
 
     # Assert
     assert response.status_code == 200
-    assert response_body == {"message": "Board This is an inspiration board successfully deleted"}
+    assert response_body == {"message": "Board 'This is an inspiration board' successfully deleted"}
     
     old_board = Board.query.get(1)
     assert not old_board
@@ -134,4 +138,4 @@ def test_delete_nonexistent_board(client):
 
     # Assert
     assert response.status_code == 404
-    assert response_body == {"message": "Board 1 not found"}
+    assert response_body == {"message": "Board 1 not found"}, 404
