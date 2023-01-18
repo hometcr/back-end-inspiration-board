@@ -60,21 +60,6 @@ def create_board():
         "board": new_board.create_dict()
         }, 201
 
-@boards_bp.route("<board_id>/cards", methods=["POST"])
-def add_card_to_board(board_id):
-    board = validate_model(Board, board_id)
-    request_body = request.get_json()
-    if not "card_ids" in request_body:
-        return "please provide card_ids in request body"
-    for id in request_body["card_ids"]:
-        card = validate_model(Card, id)
-        board.cards.append(card)
-        db.session.add(card)
-    db.session.commit()
-    return {
-        "id": int(board_id),
-        "card_ids": request_body["card_ids"],
-    }, 200
 
 @boards_bp.route("/<board_id>", methods=["DELETE"]) 
 def delete_board(board_id):
@@ -131,10 +116,19 @@ def delete_card(card_id):
 
 # Update the likes_count 
 @cards_bp.route("/<card_id>", methods=["PUT"])
-def update_card(card_id):
+def update_likes_count(card_id):
     card= validate_model(Card, card_id)
-    request_body = request.get_json(force=True)
-    if "likes_count" in request_body:
+    try:
+        request_body = request.get_json(force=True)
+    except:
+        return {
+            "error": "Please include a request body with a likes_count"
+        }, 400
+    if not "likes_count" in request_body:
+        return {
+            "error": "Please include a request body with a likes_count"
+        }, 400
+    else:
         card.likes_count = request_body["likes_count"]
     db.session.commit()
     return {
@@ -151,7 +145,8 @@ def create_card():
         return {"error": "Please include a request body with a message and board id"}, 400
     if not "message" in request_body or not "board_id" in request_body:
         return {"error": "Please provide a message and board id"}, 400
-    new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board_id"] )
+    requested_board_id = validate_model(Board, request_body["board_id"])
+    new_card = Card(likes_count=0, message=request_body["message"], board_id=request_body["board_id"])
     db.session.add(new_card)
     db.session.commit()
     return {

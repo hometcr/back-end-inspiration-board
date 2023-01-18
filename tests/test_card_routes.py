@@ -186,8 +186,8 @@ def test_create_card_on_nonexistent_board(client):
     response_body = response.get_json()
 
     # Assert
-    assert response.status_code == 400
-    assert response_body == {"error": "Board 1 not found"}, 400
+    assert response.status_code == 404
+    assert response_body == {"error": "Board 1 not found"}, 404
 
 
 def test_update_likes_on_card(client, one_card_on_one_board):
