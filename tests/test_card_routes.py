@@ -252,9 +252,26 @@ def test_update_likes_on_nonexistent_card(client):
     assert response_body == {"error": "Card 1 not found"}
 
 
-def test_delete_card(client):
-    pass
+def test_delete_card(client, one_card_on_one_board):
+    # Act
+    response = client.delete("/cards/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 200
+    assert response_body == {"message": "Card 1 successfully deleted"}
+
+    deleted_card = Card.query.get(1)
+    this_board = Board.query.get(1)
+    assert not deleted_card
+    assert not this_board.cards
 
 
 def test_delete_nonexistent_card(client):
-    pass
+    # Act
+    response = client.delete("/cards/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 404
+    assert response_body == {"error": "Card 1 not found"}

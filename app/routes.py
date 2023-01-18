@@ -127,7 +127,7 @@ def delete_card(card_id):
     card= validate_model(Card, card_id)
     db.session.delete(card)
     db.session.commit()
-    return {"message": f"Card '{card_id}' successfully deleted"}, 200
+    return {"message": f"Card {card_id} successfully deleted"}, 200
 
 # Update the likes_count 
 @cards_bp.route("/<card_id>", methods=["PUT"])
