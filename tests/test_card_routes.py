@@ -190,28 +190,66 @@ def test_create_card_on_nonexistent_board(client):
     assert response_body == {"error": "Board 1 not found"}, 400
 
 
-# def test_update_likes_on_card(client, one_card_on_one_board):
-#     # Act
-#     response = client.put("/cards/1", json={
-#         "likes_count": 5
-#     })
-#     response_body = response.get_json()
+def test_update_likes_on_card(client, one_card_on_one_board):
+    # Act
+    response = client.put("/cards/1", json={
+        "likes_count": 5
+    })
+    response_body = response.get_json()
 
-#     # Assert
-#     assert response.status_code == 201
-#     assert response_body == {""}
+    # Assert
+    assert response.status_code == 200
+    assert response_body == {
+        "message": "Likes count successfully updated",
+        "card": {
+            "card_id": 1,
+            "board_id": 1,
+            "message": "This is an inspirational card",
+            "likes_count": 5
+        }
+        }
+
+    this_card = Card.query.get(1)
+    this_board = Board.query.get(1)
+    assert this_card.likes_count == 5
+    assert this_board.cards[0].likes_count == 5
 
 
-def test_update_likes_on_card_missing_body(client):
-    pass
+# we need to edit our route to prevent this
+# our route should tell the user they need to provide a request body
+def test_update_likes_on_card_missing_body(client, one_card_on_one_board):
+    # Act
+    response = client.put("/cards/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 400
+    assert response_body == {"error": "Please include a request body with a likes_count"}
 
 
-def test_update_likes_on_card_missing_likes(client):
-    pass
+# same as previous test- should only need to fix once
+def test_update_likes_on_card_missing_likes(client, one_card_on_one_board):
+    # Act
+    response = client.put("/cards/1", json={
+        "likes": 5
+    })
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 400
+    assert response_body == {"error": "Please include a request body with a likes_count"}
 
 
 def test_update_likes_on_nonexistent_card(client):
-    pass
+    # Act
+    response = client.put("/cards/1", json={
+        "likes": 5
+    })
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 404
+    assert response_body == {"error": "Card 1 not found"}
 
 
 def test_delete_card(client):
