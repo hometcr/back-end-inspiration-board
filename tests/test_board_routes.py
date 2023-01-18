@@ -1,4 +1,5 @@
 from app.models.board import Board
+from app.models.card import Card
 
 
 def test_get_all_board_with_no_records(client):
@@ -46,6 +47,53 @@ def test_get_one_board(client, one_board):
 def test_get_nonexistent_board(client):
     # Act
     response = client.get("/boards/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 404
+    assert response_body == {"error": "Board 1 not found"}, 404
+
+
+# could we change it so it only gives the cards? applies to next 2 tests
+# we would need to change the front-end, so it's only worth it if they would prefer it
+def test_get_all_cards_on_a_board(client, one_card_on_one_board):
+    # Act
+    response = client.get("/boards/1/cards")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 200
+    assert response_body == {
+        "board_id": 1,
+        "cards": [{
+            "card_id": 1,
+            "board_id": 1,
+            "message": "This is an inspirational card",
+            "likes_count": 0
+        }],
+        "owner": "Curious Georges",
+        "title": "This is an inspiration board"
+    }
+
+
+def test_all_cards_on_a_empty_board(client, one_board):
+    # Act
+    response = client.get("/boards/1/cards")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 200
+    assert response_body == {
+        "board_id": 1,
+        "cards": [],
+        "owner": "Curious Georges",
+        "title": "This is an inspiration board"
+    }
+
+
+def test_get_all_cards_on_a_nonexistent_board(client):
+    # Act
+    response = client.get("/boards/1/cards")
     response_body = response.get_json()
 
     # Assert
@@ -121,8 +169,8 @@ def test_delete_board(client, one_board):
     assert response.status_code == 200
     assert response_body == {"message": "Board 'This is an inspiration board' successfully deleted"}
     
-    old_board = Board.query.get(1)
-    assert not old_board
+    deleted_board_in_system = Board.query.get(1)
+    assert not deleted_board_in_system
 
 
 def test_delete_nonexistent_board(client):
@@ -133,3 +181,15 @@ def test_delete_nonexistent_board(client):
     # Assert
     assert response.status_code == 404
     assert response_body == {"error": "Board 1 not found"}, 404
+
+
+def test_delete_board_deletes_cards(client, one_card_on_one_board):
+    # Act
+    response = client.delete("/boards/1")
+    response_body = response.get_json()
+
+    # Assert
+    deleted_board_in_system = Board.query.get(1)
+    assert not deleted_board_in_system
+    deleted_card_in_system = Card.query.get(1)
+    assert not deleted_card_in_system
