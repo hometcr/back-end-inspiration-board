@@ -44,7 +44,7 @@ def one_board(app):
     db.session.commit()
 
 @pytest.fixture
-def one_card_belongs_to_one_board(app, one_board):
+def one_card_on_one_board(app, one_board):
     example_board = Board.query.first()
     example_card = Card(
         message="This is an inspirational card",
@@ -54,14 +54,19 @@ def one_card_belongs_to_one_board(app, one_board):
     db.session.add_all([example_board, example_card])
     db.session.commit()
 
+@pytest.fixture
+def two_cards_on_two_boards(app, one_card_on_one_board):
+    second_board = Board(
+        title="This is a second inspiration board",
+        owner="Caitlyn"
+    )
+    db.session.add(second_board)
 
-
-# @pytest.fixture
-# def two_boards(app, one_board):
-#     first_board = Board.query.first()
-#     second_board = Board(
-#         title="Inspirational quotes", 
-#         owner="Curious Georges"
-#     )
-#     db.session.add_all([first_board, second_board])
-#     db.session.commit()
+    second_card = Card(
+        message="Hope you're having a great day!",
+        board_id=2,
+        likes_count=0
+    )
+    db.session.add(second_card)
+    db.session.commit()
+    

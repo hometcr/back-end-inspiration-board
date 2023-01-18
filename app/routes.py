@@ -120,14 +120,14 @@ def get_one_card(card_id):
 #     for card in cards:
 #         db.session.delete(card)
 #     db.session.commit()
-#     return {"details": f"All cards for board {board_id} successfully deleted"}, 200
+#     return {"message": f"All cards for board {board_id} successfully deleted"}, 200
 
 @cards_bp.route("/<card_id>", methods=["DELETE"])
 def delete_card(card_id):
     card= validate_model(Card, card_id)
     db.session.delete(card)
     db.session.commit()
-    return {"details": f"Card '{card_id}' successfully deleted"}, 200
+    return {"message": f"Card '{card_id}' successfully deleted"}, 200
 
 # Update the likes_count 
 @cards_bp.route("/<card_id>", methods=["PUT"])
@@ -137,7 +137,10 @@ def update_card(card_id):
     if "likes_count" in request_body:
         card.likes_count = request_body["likes_count"]
     db.session.commit()
-    return {"card": card.create_dict()}, 200
+    return {
+        "card": card.create_dict(), 
+        "message": "Likes count successfully updated"
+    }, 200
 
 # Posts a card when there is a likes_count, a message, and a board_id
 @cards_bp.route("", methods=["POST"])
