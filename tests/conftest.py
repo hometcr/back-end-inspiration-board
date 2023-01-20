@@ -4,20 +4,11 @@ from app import db
 from app.models.board import Board
 from app.models.card import Card
 
-# # adding to try something
-# from flask.signals import request_finished
-
 
 @pytest.fixture
 def app():
     # create the app with a test config dictionary
     app = create_app({"TESTING": True})
-
-    # # adding to try something
-    # @request_finished.connect_via(app)
-    # def expire_session(sender, response, **extra): 
-    #     db.session.remove()
-
 
     with app.app_context():
         db.create_all()
@@ -37,11 +28,12 @@ def client(app):
 @pytest.fixture
 def one_board(app):
     example_board = Board(
-        title="This is an inspiration board", 
+        title="This is an inspiration board",
         owner="Curious Georges"
     )
     db.session.add(example_board)
     db.session.commit()
+
 
 @pytest.fixture
 def one_card_on_one_board(app, one_board):
@@ -53,6 +45,7 @@ def one_card_on_one_board(app, one_board):
     )
     db.session.add_all([example_board, example_card])
     db.session.commit()
+
 
 @pytest.fixture
 def two_cards_on_two_boards(app, one_card_on_one_board):
@@ -69,4 +62,3 @@ def two_cards_on_two_boards(app, one_card_on_one_board):
     )
     db.session.add(second_card)
     db.session.commit()
-    

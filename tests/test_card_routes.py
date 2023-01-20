@@ -3,7 +3,7 @@ from app.models.card import Card
 
 
 def test_get_all_cards_with_no_records(client):
-	# Act
+    # Act
     response = client.get("/cards")
     response_body = response.get_json()
 
@@ -89,7 +89,7 @@ def test_create_card(client, one_board):
     # Assert
     assert response.status_code == 201
     assert response_body == {
-        "message": "Card 'I feel inspired' successfully created", 
+        "message": "Card 'I feel inspired' successfully created",
         "Card": {
             "message": "I feel inspired",
             "board_id": 1,
@@ -116,7 +116,8 @@ def test_create_card_missing_body(client, one_board):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please include a request body with a message and board id"}
+    assert response_body == {
+        "error": "Please include a request body with a message and board id"}
 
 
 def test_create_card_missing_board_id(client, one_board):
@@ -126,7 +127,7 @@ def test_create_card_missing_board_id(client, one_board):
     })
     response_body = response.get_json()
 
-    # Assert 
+    # Assert
     assert response.status_code == 400
     assert response_body == {"error": "Please provide a message and board id"}
 
@@ -143,7 +144,6 @@ def test_create_card_missing_message(client, one_board):
     assert response_body == {"error": "Please provide a message and board id"}
 
 
-# we probably don't need to give them the option to provide a likes_count, since it will be overridden anyways
 def test_create_card_with_likes_count(client, one_board):
     # Act
     response = client.post("/cards", json={
@@ -156,14 +156,14 @@ def test_create_card_with_likes_count(client, one_board):
     # Assert
     assert response.status_code == 201
     assert response_body == {
-        "message": "Card 'hello' successfully created", 
+        "message": "Card 'hello' successfully created",
         "Card": {
             "message": "hello",
             "board_id": 1,
             "card_id": 1,
             "likes_count": 0
         }}
-    
+
     new_card = Card.query.get(1)
     this_board = Board.query.get(1)
 
@@ -175,8 +175,6 @@ def test_create_card_with_likes_count(client, one_board):
     assert this_board.cards == [new_card]
 
 
-# we need to edit our route to prevent this
-# the route should abort if the board id isn't in the system
 def test_create_card_on_nonexistent_board(client):
     # Act
     response = client.post("/cards", json={
@@ -207,7 +205,7 @@ def test_update_likes_on_card(client, one_card_on_one_board):
             "message": "This is an inspirational card",
             "likes_count": 5
         }
-        }
+    }
 
     this_card = Card.query.get(1)
     this_board = Board.query.get(1)
@@ -215,8 +213,6 @@ def test_update_likes_on_card(client, one_card_on_one_board):
     assert this_board.cards[0].likes_count == 5
 
 
-# we need to edit our route to prevent this
-# our route should tell the user they need to provide a request body
 def test_update_likes_on_card_missing_body(client, one_card_on_one_board):
     # Act
     response = client.put("/cards/1")
@@ -224,10 +220,10 @@ def test_update_likes_on_card_missing_body(client, one_card_on_one_board):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please include a request body with a likes_count"}
+    assert response_body == {
+        "error": "Please include a request body with a likes_count"}
 
 
-# same as previous test- should only need to fix once
 def test_update_likes_on_card_missing_likes(client, one_card_on_one_board):
     # Act
     response = client.put("/cards/1", json={
@@ -237,7 +233,8 @@ def test_update_likes_on_card_missing_likes(client, one_card_on_one_board):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please include a request body with a likes_count"}
+    assert response_body == {
+        "error": "Please include a request body with a likes_count"}
 
 
 def test_update_likes_on_nonexistent_card(client):

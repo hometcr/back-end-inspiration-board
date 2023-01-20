@@ -54,8 +54,6 @@ def test_get_nonexistent_board(client):
     assert response_body == {"error": "Board 1 not found"}, 404
 
 
-# could we change it so it only gives the cards? applies to next 2 tests
-# we would need to change the front-end, so it's only worth it if they would prefer it
 def test_get_all_cards_on_a_board(client, one_card_on_one_board):
     # Act
     response = client.get("/boards/1/cards")
@@ -76,7 +74,7 @@ def test_get_all_cards_on_a_board(client, one_card_on_one_board):
     }
 
 
-def test_all_cards_on_a_empty_board(client, one_board):
+def test_all_cards_on_an_empty_board(client, one_board):
     # Act
     response = client.get("/boards/1/cards")
     response_body = response.get_json()
@@ -133,7 +131,8 @@ def test_create_board_missing_body(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please include a request body with a title and owner"}
+    assert response_body == {
+        "error": "Please include a request body with a title and owner"}
 
 
 def test_create_board_missing_title(client):
@@ -145,7 +144,8 @@ def test_create_board_missing_title(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please provide both the title and owner"}
+    assert response_body == {
+        "error": "Please provide both the title and owner"}
 
 
 def test_create_board_missing_owner(client):
@@ -157,7 +157,8 @@ def test_create_board_missing_owner(client):
 
     # Assert
     assert response.status_code == 400
-    assert response_body == {"error": "Please provide both the title and owner"}
+    assert response_body == {
+        "error": "Please provide both the title and owner"}
 
 
 def test_delete_board(client, one_board):
@@ -167,8 +168,9 @@ def test_delete_board(client, one_board):
 
     # Assert
     assert response.status_code == 200
-    assert response_body == {"message": "Board 'This is an inspiration board' successfully deleted"}
-    
+    assert response_body == {
+        "message": "Board 'This is an inspiration board' successfully deleted"}
+
     deleted_board_in_system = Board.query.get(1)
     assert not deleted_board_in_system
 
